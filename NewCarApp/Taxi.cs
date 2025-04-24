@@ -6,34 +6,29 @@ using System.Threading.Tasks;
 
 namespace NewCarApp
 {
-    public class Taxi : Car
+    public class Taxi : Car, IEnergy
     {
-        public double KmPerLiter { get; set; }
+        private IEnergy car;
         public double StartPrice { get; set; }
         public double PricePerKM { get; set; }
         public double PricePerMinute { get; set; }
         public bool MeterStarted { get; set; }
 
-        public Taxi(string brand, string model, string licensePlate, double kmPerLiter, double startPrice, double pricePerKM, double pricePerMinute, bool meterStarted)
+        public Taxi(string brand, string model, string licensePlate, IEnergy car, double startPrice, double pricePerKM, double pricePerMinute)
                 : base(brand, model, licensePlate)
+
         {
-            KmPerLiter = kmPerLiter;
+            this.car = car;
             StartPrice = startPrice;
             PricePerKM = pricePerKM;
             PricePerMinute = pricePerMinute;
             MeterStarted = true;
         }
 
-        public void StartMeter()
-        {
-            MeterStarted = true;
-        }
+        public void StartMeter() => MeterStarted = true;
+        public void StopMeter() => MeterStarted = false;
 
-        public void StopMeter()
-        {
-            MeterStarted = false;
-        }
-
+        
         public double CalculateFare(double distance, double minutes)
         {
             double fare = StartPrice + (distance * PricePerKM) + (minutes * PricePerMinute);
@@ -41,32 +36,42 @@ namespace NewCarApp
             return fare;
         }
 
-        public override bool CanDrive()
+         public override bool CanDrive(double km)
         {
-            return MeterStarted;
+            // Console.WriteLine($"[DEBUG - Taxi] Kan køre? Meter: {MeterStarted}, Motor: {IsEngineOn}, Energi: {car.EnergyLevel}, Krævet: {km}");
+            return MeterStarted && IsEngineOn && car.EnergyLevel >= km;
         }
+       
 
         public override void UpdateEnergyLevel(double distance)
         {
-            Console.WriteLine("Her vil den opdatere energiniveauet. ");
+            car.UseEnergy(distance);
         }
-
-        public override double CalculateConsumption(double distance)
+        public override double Drive(double km)
         {
-            double consumption = distance / 18.3 ;
-            return consumption;
+           return base.Drive(km);
         }
 
-        public override double TripPrice(double distance)
-        {
-            double price = ((distance / KmPerLiter) * 13.79);
-            Console.WriteLine($"Turen koster: {price}kr.");
-            return price;
+        public double EnergyLevel => car.EnergyLevel;
+        public double MaxEnergy => car.MaxEnergy;
 
-            
-        }
-
+        public void Refill (double amount) => car.Refill(amount);
+        public void UseEnergy(double kilometers) => car.UseEnergy(kilometers);
 
 
     }
 }
+
+/*  public double TripPrice(double distance)
+        {
+            double price = ((distance / KmPerLiter) * 13.79);
+            Console.WriteLine($"Turen koster: {price}kr.");
+            return price;           
+        }
+
+public double CalculateConsumption(double distance)
+        {
+            double consumption = distance / 18.3 ;
+            return consumption;
+        }
+*/

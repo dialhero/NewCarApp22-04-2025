@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace NewCarApp
 {
-    public class ElectricCar : Car
+    public class ElectricCar : Car, IEnergy
     {
         public double BatteryLevel { get; set; }
         public double BatteryCapacity { get; set; }
@@ -20,38 +20,42 @@ namespace NewCarApp
             KmPerKWh = kMPerKWh;
         }
 
+        public double EnergyLevel => BatteryLevel;
+        public double MaxEnergy => BatteryCapacity;
 
-        public void Charge(double amount)
+        public void Refill(double amount)
         {
             BatteryLevel += amount;
 
-            if (BatteryLevel > 0.9*BatteryCapacity)
+            if (BatteryLevel > BatteryCapacity)
             {
                 throw new InvalidOperationException("Fejl! Du må ikke overfylde batteriet!");
             }
+            Console.ReadLine();
         }
 
-        public override bool CanDrive()
+        public bool CanDrive(double km)
         {
-            return IsEngineOn && BatteryLevel > 0;
+            return IsEngineOn && BatteryLevel > (km/KmPerKWh);
+
+        }
+
+        public void UseEnergy (double kilometers)
+        {
+            BatteryLevel -= kilometers/KmPerKWh;
         }
 
         public override void UpdateEnergyLevel(double distance)
         {
-           BatteryLevel -= distance/KmPerKWh;
+           UseEnergy(distance);
         }
 
-        public override double CalculateConsumption(double distance)
+        public double CalculateConsumption(double distance)
         {
             return distance / KmPerKWh;
         }
 
-        public override double TripPrice(double distance)
-        {
-            double price = ((distance / KmPerKWh) * 3);
-            Console.WriteLine($"Turen koster: {price}kr.");
-            return price;
-        }
+       
 
 
     }
@@ -62,6 +66,13 @@ namespace NewCarApp
             BatteryLevel -= distance / KmPerKWh;
 
             Console.WriteLine($"Der er {BatteryLevel}KWh på batteriet.");
+        }
+
+ public double TripPrice(double distance)
+        {
+            double price = ((distance / KmPerKWh) * 3);
+            Console.WriteLine($"Turen koster: {price}kr.");
+            return price;
         }
 
 */

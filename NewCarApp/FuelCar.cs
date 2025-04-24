@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace NewCarApp
 {
-    public class FuelCar : Car
+    public class FuelCar : Car, IEnergy
     {
         public double FuelLevel { get; set; }
         public double TankCapacity { get; set; }
@@ -20,7 +20,10 @@ namespace NewCarApp
             KmPerLiter = kMPerLiter;
         }
 
-        public void Refuel(double amount)
+        public double EnergyLevel => FuelLevel;
+        public double MaxEnergy => TankCapacity;
+
+        public void Refill(double amount)
         {
             FuelLevel += amount;
 
@@ -30,27 +33,28 @@ namespace NewCarApp
             }
         }
 
-        public override bool CanDrive()
+        public override bool CanDrive(double km)
         {
-            return IsEngineOn && FuelLevel > 0;
+            return IsEngineOn && FuelLevel > (km / KmPerLiter);
+
         }
 
-        public override void UpdateEnergyLevel(double distance)
+        public void UseEnergy(double distance)
         {
             FuelLevel -= distance / KmPerLiter;
         }
 
-        public override double CalculateConsumption(double distance)
+        public override void UpdateEnergyLevel(double distance)
+        {
+            UseEnergy(distance);
+        }
+
+        public double CalculateConsumption(double distance)
         {
             return distance / KmPerLiter;
         }
 
-        public override double TripPrice(double distance)
-        {
-            double price = ((distance / KmPerLiter) * 14.79);
-            Console.WriteLine($"Turen koster: {price}kr.");
-            return price;
-        }
+       
     }
 }
 /*
@@ -60,5 +64,12 @@ namespace NewCarApp
             FuelLevel -= distance / KmPerLiter;
 
             Console.WriteLine($"Der er {FuelLevel}L i tanken.");
+        }
+
+ public double TripPrice(double distance)
+        {
+            double price = ((distance / KmPerLiter) * 14.79);
+            Console.WriteLine($"Turen koster: {price}kr.");
+            return price;
         }
 */
