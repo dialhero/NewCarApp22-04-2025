@@ -46,10 +46,20 @@ namespace NewCarApp
         public override void UpdateEnergyLevel(double distance)
         {
             car.UseEnergy(distance);
+            
         }
+
         public override double Drive(double km)
         {
-           return base.Drive(km);
+            if (!CanDrive(km))
+            {
+                Console.WriteLine($"{Brand} {Model} kan ikke køre {km} km pga. lav energi.");
+                return 0;
+            }
+
+            double driven = base.Drive(km);  // dette vil vise korrekt output, fordi base.Drive logger alt
+            car.UseEnergy(km); // vigtigt: Taxi selv opdaterer ikke energi, så vi kalder det manuelt
+            return driven;
         }
 
         public double EnergyLevel => car.EnergyLevel;

@@ -31,7 +31,7 @@ namespace NewCarApp
             {
                 throw new InvalidOperationException("Fejl! Du må ikke overfylde batteriet!");
             }
-            Console.ReadLine();
+            
         }
 
         public bool CanDrive(double km)

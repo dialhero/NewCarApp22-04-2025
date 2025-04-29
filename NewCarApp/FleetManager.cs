@@ -48,10 +48,10 @@ namespace NewCarApp
             foreach (var vehicle in _vehicles)
             {
                 if (vehicle.CanDrive(kilometers))
-                {
-                    vehicle.Drive(kilometers);
+                {                    
                     Console.WriteLine($"\nDenne bil: {vehicle.Brand} {vehicle.Model} kørte {kilometers} km");
-                    
+                    Console.WriteLine($"Type: {vehicle.GetType().Name}");
+                    vehicle.Drive(kilometers);
                 }
 
                 else
@@ -63,24 +63,49 @@ namespace NewCarApp
 
         }
 
-
-        public void RefillAllVehicles()
+    /*    public void RefillAllVehicles()
         {
-            
             foreach (var vehicle in _vehicles)
             {
+                Console.WriteLine($"[DEBUG] Tjekker: {vehicle.Brand} {vehicle.Model} ({vehicle.GetType().Name})");
+
                 if (vehicle is IEnergy energyVehicle)
                 {
                     double amountToRefill = energyVehicle.MaxEnergy - energyVehicle.EnergyLevel;
+                    Console.WriteLine($"[DEBUG] Skal refill: {amountToRefill:F2}");
 
-                    energyVehicle.Refill(amountToRefill);
+                    try
+                    {
+                        energyVehicle.Refill(amountToRefill);
+                        Console.WriteLine($"{vehicle.Brand} {vehicle.Model} refilled to maximum capacity");
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"[FEJL] Kunne ikke refill {vehicle.Brand} {vehicle.Model}: {ex.Message}");
+                    }
+                }
+            }
+        }
+    */
 
-                    Console.WriteLine($"\n{vehicle.Brand} {vehicle.Model} refilled to maximum capacity");
+            public void RefillAllVehicles()
+            {
+
+                foreach (var vehicle in _vehicles)
+                {
+                    if (vehicle is IEnergy energyVehicle)
+                    {
+                        double amountToRefill = energyVehicle.MaxEnergy - energyVehicle.EnergyLevel;
+
+                        energyVehicle.Refill(amountToRefill);
+
+                        Console.WriteLine($"\n{vehicle.Brand} {vehicle.Model} refilled to maximum capacity");
+                    }
+
                 }
 
             }
-
-        }
+        
 
         public void DisplayFleetStatus()
         {
